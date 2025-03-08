@@ -3,7 +3,7 @@ variable "project_name" {
   description = "Nome do projeto. Utilizado como prefixo para os recursos criados dentro desse projeto."
 }
 
-variable "aws_region" {
+variable "region" {
   type        = string
   description = "Região da AWS onde os recursos serão criados."
 }
@@ -17,7 +17,7 @@ variable "availability_zones" {
 }
 
 variable "private_subnets" {
-  type = list(map({
+  type = list(object({
     name              = string
     cidr              = string
     availability_zone = string
@@ -25,7 +25,7 @@ variable "private_subnets" {
 }
 
 variable "public_subnets" {
-  type = list(map({
+  type = list(object({
     name              = string
     cidr              = string
     availability_zone = string
