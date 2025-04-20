@@ -42,7 +42,7 @@ output "service_discovery_service_connect_name" {
   value = aws_service_discovery_private_dns_namespace.sc.name
 }
 
-output "vpc_link_nlb_arn" {
+output "vpc_link_arn" {
   value = aws_lb.vpclink.arn
 }
 
