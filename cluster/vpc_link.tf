@@ -87,9 +87,9 @@ resource "aws_lb_target_group_attachment" "internal_lb_443" {
 
   target_group_arn = aws_lb_target_group.vpclink_https[count.index].arn
   target_id        = aws_lb.internal.id
-  port             = 443
+  port             = aws_lb_listener.vpclink_https[count.index].port #443
 
-  depends_on = [aws_lb_listener.internal]
+  depends_on = [aws_lb_listener.vpclink_https]
 }
 
 resource "aws_lb_listener" "vpclink" {
@@ -112,7 +112,7 @@ resource "aws_lb_listener" "vpclink_https" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.vpclink.arn
+    target_group_arn = aws_lb_target_group.vpclink_https[count.index].arn
   }
 }
 
