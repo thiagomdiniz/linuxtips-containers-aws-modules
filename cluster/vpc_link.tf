@@ -62,6 +62,17 @@ resource "aws_lb_target_group" "vpclink" {
   }
 }
 
+resource "aws_lb_listener" "vpclink" {
+  load_balancer_arn = aws_lb.vpclink.arn
+  port              = 80
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.vpclink.arn
+  }
+}
+
 resource "aws_lb_target_group" "vpclink_https" {
   count = length(var.acm_certs) > 0 ? 1 : 0
 
@@ -82,27 +93,6 @@ resource "aws_lb_target_group" "vpclink_https" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "internal_lb_443" {
-  count = length(var.acm_certs) > 0 ? 1 : 0
-
-  target_group_arn = aws_lb_target_group.vpclink_https[count.index].arn
-  target_id        = aws_lb.internal.id
-  port             = aws_lb_listener.vpclink_https[count.index].port #443
-
-  depends_on = [aws_lb_listener.vpclink_https]
-}
-
-resource "aws_lb_listener" "vpclink" {
-  load_balancer_arn = aws_lb.vpclink.arn
-  port              = 80
-  protocol          = "TCP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.vpclink.arn
-  }
-}
-
 resource "aws_lb_listener" "vpclink_https" {
   count = length(var.acm_certs) > 0 ? 1 : 0
 
@@ -114,6 +104,16 @@ resource "aws_lb_listener" "vpclink_https" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.vpclink_https[count.index].arn
   }
+}
+
+resource "aws_lb_target_group_attachment" "internal_lb_443" {
+  count = length(var.acm_certs) > 0 ? 1 : 0
+
+  target_group_arn = aws_lb_target_group.vpclink_https[count.index].arn
+  target_id        = aws_lb.internal.id
+  port             = aws_lb_listener.vpclink_https[count.index].port #443
+
+  depends_on = [aws_lb_listener.vpclink_https]
 }
 
 resource "aws_lb_target_group_attachment" "internal_lb" {
